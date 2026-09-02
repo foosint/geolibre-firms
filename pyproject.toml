@@ -1,0 +1,16 @@
+[project]
+name = "firms-fire-parquet"
+version = "0.1.0"
+description = "Convert NASA FIRMS fire-footprint KMZ data to filtered GeoParquet"
+requires-python = ">=3.12"
+dependencies = [
+    "geopandas>=1.0",
+    "pandas>=2.2",
+    "pyarrow>=17",
+    "requests>=2.32",
+    "shapely>=2.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

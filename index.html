@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FIRMS Russia/Asia GeoParquet</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    code { background: #eee; padding: 2px 4px; }
+    li { margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <h1>NASA FIRMS Russia/Asia GeoParquet</h1>
+  <p>Automatically regenerated from NASA FIRMS approximately every 20 minutes.</p>
+  <h2>Data</h2>
+  <ul>
+    <li><a href="parquet/centroids_0_6.parquet">Centroids 0–&lt;6 h</a></li>
+    <li><a href="parquet/centroids_6_12.parquet">Centroids 6–&lt;12 h</a></li>
+    <li><a href="parquet/centroids_12_24.parquet">Centroids 12–&lt;24 h</a></li>
+    <li><a href="parquet/footprints_0_6.parquet">Footprints 0–&lt;6 h</a></li>
+    <li><a href="parquet/footprints_6_12.parquet">Footprints 6–&lt;12 h</a></li>
+    <li><a href="parquet/footprints_12_24.parquet">Footprints 12–&lt;24 h</a></li>
+  </ul>
+  <h2>Last update</h2>
+  <pre id="metadata">Loading...</pre>
+  <script>
+    fetch("parquet/metadata.json", {cache: "no-store"})
+      .then(r => r.json())
+      .then(data => document.getElementById("metadata").textContent = JSON.stringify(data, null, 2))
+      .catch(err => document.getElementById("metadata").textContent = err.toString());
+  </script>
+</body>
+</html>

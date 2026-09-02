@@ -1,0 +1,65 @@
+name: Update FIRMS GeoParquet
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/20 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: firms-update
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: latest
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync --no-dev
+
+      - name: Check filter shapefile
+        env:
+          FILTER_SHAPEFILE: data/filter/ukraine_russia.shp
+        run: |
+          for ext in shp shx dbf prj; do
+            if [ ! -f "${FILTER_SHAPEFILE%.shp}.$ext" ]; then
+              echo "::error::Missing shapefile component: ${FILTER_SHAPEFILE%.shp}.$ext"
+              exit 1
+            fi
+          done
+
+      - name: Convert FIRMS KMZ to GeoParquet
+        env:
+          FILTER_SHAPEFILE: data/filter/ukraine_russia.shp
+        run: |
+          uv run python src/convert_firms.py \
+            --filter "$FILTER_SHAPEFILE" \
+            --output parquet
+
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add parquet/
+          if git diff --cached --quiet; then
+            echo "No data changes."
+          else
+            git commit -m "Update FIRMS fire data"
+            git push
+          fi
