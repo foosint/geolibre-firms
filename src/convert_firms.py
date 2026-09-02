@@ -283,18 +283,21 @@ def write_outputs(all_rows: list[dict[str, Any]], output_dir: Path) -> dict[str,
     output_dir.mkdir(parents=True, exist_ok=True)
     stats: dict[str, int] = {}
 
-    for filename in OUTPUTS.values():
-        path = output_dir / filename
-        if path.exists():
-            path.unlink()
-
     for (geometry_type, bucket), filename in OUTPUTS.items():
+        path = output_dir / filename
         rows = [
             row for row in all_rows
             if row["geometry_type"] == geometry_type and row["time_range"] == bucket
         ]
         gdf = make_gdf(rows)
-        path = output_dir / filename
+        
+        if len(gdf) == 0:
+            LOG.info("Skipping %s (0 features found)", filename)
+            if path.exists():
+                path.unlink() # Remove old stale file if it exists
+            continue
+            
+        path.parent.mkdir(parents=True, exist_ok=True)
         gdf.to_parquet(path, index=False, compression="snappy")
         stats[filename] = len(gdf)
         LOG.info("Wrote %-24s %8d features", filename, len(gdf))
