@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-09-02T13:45:55.016733+00:00",
+  "source": "NASA FIRMS",
+  "region": "russia_asia",
+  "date_span": "24h",
+  "sensors": [
+    "MODIS_C6.1",
+    "SUOMI-NPP",
+    "NOAA-20",
+    "NOAA-21"
+  ],
+  "filter": "data/filter/ukraine_russia.shp",
+  "filter_centroids": "within",
+  "filter_footprints": "intersects",
+  "outputs": {
+    "centroids_0_6.parquet": 0,
+    "centroids_6_12.parquet": 0,
+    "centroids_12_24.parquet": 0,
+    "footprints_0_6.parquet": 0,
+    "footprints_6_12.parquet": 0,
+    "footprints_12_24.parquet": 0
+  }
+}
