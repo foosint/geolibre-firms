@@ -298,10 +298,43 @@ def write_outputs(all_rows: list[dict[str, Any]], output_dir: Path) -> dict[str,
             continue
             
         path.parent.mkdir(parents=True, exist_ok=True)
-        gdf.to_parquet(path, index=False, compression="snappy")
-        stats[filename] = len(gdf)
-        LOG.info("Wrote %-24s %8d features", filename, len(gdf))
+        
+        # Write to a temporary file first to guarantee magic bytes are fully written before exposure
+        tmp_path = path.with_suffix(path.suffix + ".tmp")
+        try:
+            gdf.to_parquet(tmp_path, index=False, compression="snappy")
+            tmp_path.replace(path)  # Atomic rename
+            stats[filename] = len(gdf)
+            LOG.info("Wrote %-24s %8d features", filename, len(gdf))
+        except Exception:
+            if tmp_path.exists():
+                tmp_path.unlink()
+            raise
     return stats
+
+# def write_outputs(all_rows: list[dict[str, Any]], output_dir: Path) -> dict[str, int]:
+#     output_dir.mkdir(parents=True, exist_ok=True)
+#     stats: dict[str, int] = {}
+
+#     for (geometry_type, bucket), filename in OUTPUTS.items():
+#         path = output_dir / filename
+#         rows = [
+#             row for row in all_rows
+#             if row["geometry_type"] == geometry_type and row["time_range"] == bucket
+#         ]
+#         gdf = make_gdf(rows)
+        
+#         if len(gdf) == 0:
+#             LOG.info("Skipping %s (0 features found)", filename)
+#             if path.exists():
+#                 path.unlink() # Remove old stale file if it exists
+#             continue
+            
+#         path.parent.mkdir(parents=True, exist_ok=True)
+#         gdf.to_parquet(path, index=False, compression="snappy")
+#         stats[filename] = len(gdf)
+#         LOG.info("Wrote %-24s %8d features", filename, len(gdf))
+#     return stats
 
 
 def main() -> int:
