@@ -281,7 +281,7 @@ def write_outputs(all_rows: list[dict[str, Any]], output_dir: Path) -> dict[str,
         ]
         gdf = make_gdf(rows)
         path = output_dir / filename
-        gdf.to_parquet(path, index=False, compression="zstd")
+        gdf.to_parquet(path, index=False, compression="snappy")
         stats[filename] = len(gdf)
         LOG.info("Wrote %-24s %8d features", filename, len(gdf))
     return stats
