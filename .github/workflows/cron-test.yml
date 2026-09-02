@@ -1,9 +1,8 @@
-
 name: Cron Test
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "7,17,27,37,47,57 * * * *"
 
   workflow_dispatch:
 
@@ -13,4 +12,6 @@ jobs:
 
     steps:
       - name: Hello world
-        run: echo "Hello from scheduled GitHub Actions!"
+        run: |
+          echo "Hello from GitHub Actions!"
+          echo "Triggered at: $(date -u)"
