@@ -40,13 +40,13 @@ uv run python src/convert_firms.py \
   --output parquet
 ```
 
-## GitHub Actions
+## GitHub Actions (triggered manually)
 
-The workflow runs automatically every 30 minutes and can also be started manually from **Actions → Update FIRMS GeoParquet → Run workflow**.
+The workflow is automatically disabled, but triggered externally every 10 minutes and can also be started manually from **Actions → Update FIRMS GeoParquet → Run workflow**.
 
 Every run regenerates all six files from the current FIRMS 24-hour products. It does not append to previous data.
 
-## GitHub Pages
+## GitHub Pages (currently disabled)
 
 Enable GitHub Pages for the repository using the repository's `main` branch and `/ (root)` as the publishing source. `index.html` then provides links to the six Parquet files and displays `metadata.json`.
 
@@ -78,6 +78,4 @@ Replace `YOUR-USER/YOUR-REPOSITORY` with the actual repository path.
 
 Each feature also receives `sensor`, `time_range`, `geometry_type`, and `layer` fields.
 
-## Important implementation detail
 
-The KMZ files are parsed directly rather than first converting each layer with an external GIS executable. This keeps the GitHub Action self-contained and avoids requiring QGIS or GDAL command-line utilities in the workflow.
