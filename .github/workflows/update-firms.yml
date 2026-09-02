@@ -61,5 +61,5 @@ jobs:
             echo "No data changes."
           else
             git commit -m "Update FIRMS fire data"
-            git push
+            git push origin HEAD:main
           fi
