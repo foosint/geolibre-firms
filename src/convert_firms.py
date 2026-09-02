@@ -5,11 +5,11 @@ import io
 import json
 import logging
 import re
+import xml.etree.ElementTree as ET
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-import xml.etree.ElementTree as ET
 
 import geopandas as gpd
 import pandas as pd
@@ -35,11 +35,11 @@ OUTPUTS = {
     ("footprint", "12_24"): "footprints_12_24.parquet",
 }
 
-NS = {"kml": "http://www.opengis.net/kml/2.2"}
+NS = {"kml": "http://earth.google.com/kml/2.1"}
 TIME_PATTERNS = [
-    (re.compile(r"0\s*(?:to|-|–|—)\s*<?\s*6", re.I), "0_6"),
-    (re.compile(r"6\s*(?:to|-|–|—)\s*<?\s*12", re.I), "6_12"),
-    (re.compile(r"12\s*(?:to|-|–|—)\s*<?\s*24", re.I), "12_24"),
+    (re.compile(r"0\s*(?:to|-|–|—)\s*<?\s*6\s*(?:hrs)?", re.I), "0_6"),
+    (re.compile(r"6\s*(?:to|-|–|—)\s*<?\s*12\s*(?:hrs)?", re.I), "6_12"),
+    (re.compile(r"12\s*(?:to|-|–|—)\s*<?\s*24\s*(?:hrs)?", re.I), "12_24"),
 ]
 
 
@@ -166,9 +166,10 @@ def walk(parent: ET.Element, folders: list[str], sensor: str, rows: list[dict[st
         tag = local(child.tag)
         if tag == "Folder":
             name = text(child.find("kml:name", NS))
+            print(name)
             walk(child, folders + ([name] if name else []), sensor, rows)
         elif tag in {"Document", "kml:Document"}:
-            walk(child, folders, sensor, rows)
+                walk(child, folders, sensor, rows)
         elif tag == "Placemark":
             name = text(child.find("kml:name", NS))
             bucket = find_time(folders + [name])
