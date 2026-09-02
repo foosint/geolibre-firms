@@ -5,6 +5,7 @@ import io
 import json
 import logging
 import re
+import time
 import xml.etree.ElementTree as ET
 import zipfile
 from datetime import datetime, timezone
@@ -203,17 +204,24 @@ def parse_kml(data: bytes, sensor: str) -> list[dict[str, Any]]:
     return rows
 
 
-def download_kmz(url: str) -> bytes:
-    LOG.info("Downloading %s", url)
-    response = requests.get(
-        url,
-        timeout=(30, 180),
-        headers={"User-Agent": "firms-fire-parquet/1.0"},
-    )
-    response.raise_for_status()
-    if not response.content.startswith(b"PK"):
-        raise RuntimeError(f"Response is not a KMZ/ZIP file: {url}")
-    return response.content
+def download_kmz(url: str, retries: int = 3, backoff_factor: int = 5) -> bytes:
+    for attempt in range(1, retries + 1):
+        try:
+            LOG.info("Downloading %s (attempt %d/%d)", url, attempt, retries)
+            response = requests.get(
+                url,
+                timeout=(30, 180),
+                headers={"User-Agent": "firms-fire-parquet/1.0"},
+            )
+            response.raise_for_status()
+            if not response.content.startswith(b"PK"):
+                raise RuntimeError(f"Response is not a KMZ/ZIP file: {url}")
+            return response.content
+        except (requests.exceptions.RequestException, OSError) as e:
+            LOG.warning("Attempt %d failed for %s: %s", attempt, url, e)
+            if attempt == retries:
+                raise
+            time.sleep(backoff_factor * attempt)
 
 
 def parse_kmz(data: bytes, sensor: str) -> list[dict[str, Any]]:
