@@ -204,7 +204,7 @@ def parse_kml(data: bytes, sensor: str) -> list[dict[str, Any]]:
     return rows
 
 
-def download_kmz(url: str, retries: int = 3, backoff_factor: int = 5) -> bytes:
+def download_kmz(url: str, retries: int = 3, backoff_factor: int = 10) -> bytes | None:
     for attempt in range(1, retries + 1):
         try:
             LOG.info("Downloading %s (attempt %d/%d)", url, attempt, retries)
@@ -217,11 +217,13 @@ def download_kmz(url: str, retries: int = 3, backoff_factor: int = 5) -> bytes:
             if not response.content.startswith(b"PK"):
                 raise RuntimeError(f"Response is not a KMZ/ZIP file: {url}")
             return response.content
-        except (requests.exceptions.RequestException, OSError) as e:
+        except (requests.exceptions.RequestException, OSError, RuntimeError) as e:
             LOG.warning("Attempt %d failed for %s: %s", attempt, url, e)
             if attempt == retries:
-                raise
+                LOG.error("Max retries reached for %s. Giving up.", url)
+                return None
             time.sleep(backoff_factor * attempt)
+    return None
 
 
 def parse_kmz(data: bytes, sensor: str) -> list[dict[str, Any]]:
@@ -306,7 +308,11 @@ def main() -> int:
     all_rows: list[dict[str, Any]] = []
 
     for sensor, url in URLS.items():
-        rows = parse_kmz(download_kmz(url), sensor)
+        data = download_kmz(url)
+        if data is None:
+            LOG.warning("Stopping further processing gracefully due to persistent download failure.")
+            return 0
+        rows = parse_kmz(data, sensor)
         LOG.info("%s: extracted %d usable geometries", sensor, len(rows))
         all_rows.extend(rows)
 
