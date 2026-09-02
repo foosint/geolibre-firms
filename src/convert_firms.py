@@ -15,8 +15,12 @@ from typing import Any
 import geopandas as gpd
 import pandas as pd
 import requests
+import urllib3.util.connection as urllib3_cn
 from shapely.geometry import GeometryCollection, Point, Polygon
 from shapely.ops import unary_union
+
+# Force IPv4 resolution globally for urllib3/requests
+urllib3_cn.HAS_IPV6 = False
 
 LOG = logging.getLogger("firms")
 
@@ -204,7 +208,7 @@ def parse_kml(data: bytes, sensor: str) -> list[dict[str, Any]]:
     return rows
 
 
-def download_kmz(url: str, retries: int = 3, backoff_factor: int = 10) -> bytes | None:
+def download_kmz(url: str, retries: int = 3, backoff_factor: int = 5) -> bytes | None:
     for attempt in range(1, retries + 1):
         try:
             LOG.info("Downloading %s (attempt %d/%d)", url, attempt, retries)
