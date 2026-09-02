@@ -1,0 +1,16 @@
+
+name: Cron Test
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+
+  workflow_dispatch:
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Hello world
+        run: echo "Hello from scheduled GitHub Actions!"
