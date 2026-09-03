@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T09:20:24.332654+00:00",
+  "generated_at": "2026-09-03T09:30:23.651374+00:00",
   "source": "NASA FIRMS",
   "region": "russia_asia",
   "date_span": "24h",
@@ -14,10 +14,10 @@
   "filter_footprints": "intersects",
   "outputs": {
     "centroids_0_6.parquet": 6252,
-    "centroids_6_12.parquet": 3373,
-    "centroids_12_24.parquet": 35065,
+    "centroids_6_12.parquet": 3360,
+    "centroids_12_24.parquet": 34580,
     "footprints_0_6.parquet": 6252,
-    "footprints_6_12.parquet": 3374,
-    "footprints_12_24.parquet": 35066
+    "footprints_6_12.parquet": 3361,
+    "footprints_12_24.parquet": 34581
   }
 }
