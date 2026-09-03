@@ -1753,8 +1753,6 @@
 { "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 48.98456, 51.05857 ], [ 48.98992, 51.05857 ], [ 48.98992, 51.05521 ], [ 48.98456, 51.05521 ], [ 48.98456, 51.05857 ] ] ] } },
 { "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 48.98902, 51.05989 ], [ 48.99438, 51.05989 ], [ 48.99438, 51.05653 ], [ 48.98902, 51.05653 ], [ 48.98902, 51.05989 ] ] ] } },
 { "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 48.98799, 51.05385 ], [ 48.99335, 51.05385 ], [ 48.99335, 51.05049 ], [ 48.98799, 51.05049 ], [ 48.98799, 51.05385 ] ] ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 48.01604, 42.26357 ], [ 48.0206, 42.26357 ], [ 48.0206, 42.26021 ], [ 48.01604, 42.26021 ], [ 48.01604, 42.26357 ] ] ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 70.9858, 66.20016 ], [ 70.99414, 66.20016 ], [ 70.99414, 66.1968 ], [ 70.9858, 66.1968 ], [ 70.9858, 66.20016 ] ] ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 72.20968, 64.97584 ], [ 72.21764, 64.97584 ], [ 72.21764, 64.97248 ], [ 72.20968, 64.97248 ], [ 72.20968, 64.97584 ] ] ] } }
+{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 48.01604, 42.26357 ], [ 48.0206, 42.26357 ], [ 48.0206, 42.26021 ], [ 48.01604, 42.26021 ], [ 48.01604, 42.26357 ] ] ] } }
 ]
 }

@@ -1753,8 +1753,6 @@
 { "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 48.98724, 51.05689 ] } },
 { "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 48.9917, 51.05821 ] } },
 { "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 48.99067, 51.05217 ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 48.01832, 42.26189 ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 70.98997, 66.19848 ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 72.21366, 64.97416 ] } }
+{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 48.01832, 42.26189 ] } }
 ]
 }
