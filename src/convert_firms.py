@@ -40,6 +40,10 @@ OUTPUTS = {
     ("footprint", "12_24"): "footprints_12_24",
 }
 
+ROOT_OUT = Path(".")
+PARQUET_OUT = Path("parquet")
+GEOJSON_OUT = Path("geojson")
+
 NS = {"kml": "http://earth.google.com/kml/2.1"}
 TIME_PATTERNS = [
     (re.compile(r"0\s*(?:to|-|–|—)\s*<?\s*6\s*(?:hrs)?", re.I), "0_6"),
@@ -279,9 +283,9 @@ def make_gdf(rows: list[dict[str, Any]]) -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(rows, geometry="geometry", crs="EPSG:4326")
 
 
-def write_outputs(all_rows: list[dict[str, Any]], output_dir: Path, geojson_dir: Path) -> tuple[dict[str, int], dict[str, int]]:
-    output_dir.mkdir(parents=True, exist_ok=True)
-    geojson_dir.mkdir(parents=True, exist_ok=True)
+def write_outputs(all_rows: list[dict[str, Any]]) -> tuple[dict[str, int], dict[str, int]]:
+    PARQUET_OUT.mkdir(parents=True, exist_ok=True)
+    GEOJSON_OUT.mkdir(parents=True, exist_ok=True)
     stats: dict[str, int] = {}
     geojson_stats: dict[str, int] = {}
 
@@ -289,8 +293,8 @@ def write_outputs(all_rows: list[dict[str, Any]], output_dir: Path, geojson_dir:
         parquet_filename = f"{base_name}.parquet"
         geojson_filename = f"{base_name}.geojson"
         
-        parquet_path = output_dir / parquet_filename
-        geojson_path = geojson_dir / geojson_filename
+        parquet_path = PARQUET_OUT / parquet_filename
+        geojson_path = GEOJSON_OUT / geojson_filename
         
         rows = [
             row for row in all_rows
@@ -337,7 +341,7 @@ def write_outputs(all_rows: list[dict[str, Any]], output_dir: Path, geojson_dir:
 
 
 
-def generate_index_html(output_dir: Path, geojson_dir: Path, metadata: dict, geojson_metadata: dict) -> None:
+def generate_index_html(parquet_metadata: dict, geojson_metadata: dict) -> None:
     html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -353,19 +357,19 @@ def generate_index_html(output_dir: Path, geojson_dir: Path, metadata: dict, geo
 </head>
 <body>
     <h1>FIRMS Fire Data Portal</h1>
-    <p>Generated at: <strong>{metadata['generated_at']}</strong></p>
-    <p>Region: <strong>{metadata['region']}</strong> | Source: <strong>{metadata['source']}</strong></p>
+    <p>Generated at: <strong>{parquet_metadata['generated_at']}</strong></p>
+    <p>Region: <strong>{parquet_metadata['region']}</strong> | Source: <strong>{parquet_metadata['source']}</strong></p>
 
     <div class="card">
         <h2>GeoParquet Files</h2>
         <ul>
 """
-    for fname in metadata["outputs"].keys():
-        html_content += f'            <li><a href="{output_dir.name}/{fname}">{fname}</a> ({metadata["outputs"][fname]} features)</li>\n'
+    for fname in parquet_metadata["outputs"].keys():
+        html_content += f'            <li><a href="{PARQUET_OUT.name}/{fname}">{fname}</a> ({parquet_metadata["outputs"][fname]} features)</li>\n'
     
     html_content += f"""        </ul>
         <h3>Parquet Metadata</h3>
-        <pre>{json.dumps(metadata, indent=2)}</pre>
+        <pre>{json.dumps(parquet_metadata, indent=2)}</pre>
     </div>
 
     <div class="card">
@@ -373,7 +377,7 @@ def generate_index_html(output_dir: Path, geojson_dir: Path, metadata: dict, geo
         <ul>
 """
     for fname in geojson_metadata["outputs"].keys():
-        html_content += f'            <li><a href="{geojson_dir.name}/{fname}">{fname}</a> ({geojson_metadata["outputs"][fname]} features)</li>\n'
+        html_content += f'            <li><a href="{GEOJSON_OUT.name}/{fname}">{fname}</a> ({geojson_metadata["outputs"][fname]} features)</li>\n'
 
     html_content += f"""        </ul>
         <h3>GeoJSON Metadata</h3>
@@ -382,14 +386,12 @@ def generate_index_html(output_dir: Path, geojson_dir: Path, metadata: dict, geo
 </body>
 </html>
 """
-    (output_dir.parent / "index.html").write_text(html_content, encoding="utf-8")
+    (ROOT_OUT / "index.html").write_text(html_content, encoding="utf-8")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--filter", type=Path, required=True)
-    parser.add_argument("--output", type=Path, default=Path("parquet"))
-    parser.add_argument("--geojson-output", type=Path, default=Path("geojson"))
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -409,9 +411,9 @@ def main() -> int:
     all_rows = filter_rows(all_rows, load_filter(args.filter))
     LOG.info("Spatial filter: %d -> %d geometries", before, len(all_rows))
     
-    stats, geojson_stats = write_outputs(all_rows, args.output, args.geojson_output)
+    parquet_stats, geojson_stats = write_outputs(all_rows)
 
-    metadata = {
+    parquet_metadata = {
         "generated_at": generated_at,
         "source": "NASA FIRMS",
         "region": "russia_asia",
@@ -420,9 +422,9 @@ def main() -> int:
         "filter": str(args.filter),
         "filter_centroids": "within",
         "filter_footprints": "intersects",
-        "outputs": stats,
+        "outputs": parquet_stats,
     }
-    (args.output / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+    (PARQUET_OUT / "metadata.json").write_text(json.dumps(parquet_metadata, indent=2) + "\n", encoding="utf-8")
 
     geojson_metadata = {
         "generated_at": generated_at,
@@ -435,9 +437,9 @@ def main() -> int:
         "filter_footprints": "intersects",
         "outputs": geojson_stats,
     }
-    (args.geojson_output / "metadata.json").write_text(json.dumps(geojson_metadata, indent=2) + "\n", encoding="utf-8")
+    (GEOJSON_OUT / "metadata.json").write_text(json.dumps(geojson_metadata, indent=2) + "\n", encoding="utf-8")
 
-    generate_index_html(args.output, args.geojson_output, metadata, geojson_metadata)
+    generate_index_html(parquet_metadata, geojson_metadata)
     return 0
 
 

@@ -47,8 +47,7 @@ jobs:
           FILTER_SHAPEFILE: data/filter/ukraine_russia.shp
         run: |
           uv run python src/convert_firms.py \
-            --filter "$FILTER_SHAPEFILE" \
-            --output parquet
+            --filter "$FILTER_SHAPEFILE"
 
       - name: Commit updated data
         run: |
