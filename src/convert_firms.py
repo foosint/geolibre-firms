@@ -32,12 +32,12 @@ URLS = {
 }
 
 OUTPUTS = {
-    ("centroid", "0_6"): "centroids_0_6.parquet",
-    ("centroid", "6_12"): "centroids_6_12.parquet",
-    ("centroid", "12_24"): "centroids_12_24.parquet",
-    ("footprint", "0_6"): "footprints_0_6.parquet",
-    ("footprint", "6_12"): "footprints_6_12.parquet",
-    ("footprint", "12_24"): "footprints_12_24.parquet",
+    ("centroid", "0_6"): "centroids_0_6",
+    ("centroid", "6_12"): "centroids_6_12",
+    ("centroid", "12_24"): "centroids_12_24",
+    ("footprint", "0_6"): "footprints_0_6",
+    ("footprint", "6_12"): "footprints_6_12",
+    ("footprint", "12_24"): "footprints_12_24",
 }
 
 NS = {"kml": "http://earth.google.com/kml/2.1"}
@@ -285,52 +285,54 @@ def write_outputs(all_rows: list[dict[str, Any]], output_dir: Path, geojson_dir:
     stats: dict[str, int] = {}
     geojson_stats: dict[str, int] = {}
 
-    for (geometry_type, bucket), filename in OUTPUTS.items():
-            parquet_path = output_dir / filename
-            geojson_filename = str(Path(filename).with_suffix(".geojson"))
-            geojson_path = geojson_dir / geojson_filename
+    for (geometry_type, bucket), base_name in OUTPUTS.items():
+        parquet_filename = f"{base_name}.parquet"
+        geojson_filename = f"{base_name}.geojson"
+        
+        parquet_path = output_dir / parquet_filename
+        geojson_path = geojson_dir / geojson_filename
+        
+        rows = [
+            row for row in all_rows
+            if row["geometry_type"] == geometry_type and row["time_range"] == bucket
+        ]
+        gdf = make_gdf(rows)
+        
+        if len(gdf) == 0:
+            LOG.info("Skipping %s (0 features found)", base_name)
+            if parquet_path.exists():
+                parquet_path.unlink()
+            if geojson_path.exists():
+                geojson_path.unlink()
+            continue
             
-            rows = [
-                row for row in all_rows
-                if row["geometry_type"] == geometry_type and row["time_range"] == bucket
-            ]
-            gdf = make_gdf(rows)
-            
-            if len(gdf) == 0:
-                LOG.info("Skipping %s (0 features found)", filename)
-                if parquet_path.exists():
-                    parquet_path.unlink()
-                if geojson_path.exists():
-                    geojson_path.unlink()
-                continue
-                
-            columns_to_keep = ["sensor", "geometry"]
-            existing_cols = [col for col in columns_to_keep if col in gdf.columns]
-            gdf_clean = gdf[existing_cols]
+        columns_to_keep = ["sensor", "geometry"]
+        existing_cols = [col for col in columns_to_keep if col in gdf.columns]
+        gdf_clean = gdf[existing_cols]
 
-            parquet_path.parent.mkdir(parents=True, exist_ok=True)
-            tmp_parquet = parquet_path.with_suffix(parquet_path.suffix + ".tmp")
-            try:
-                gdf_clean.to_parquet(tmp_parquet, index=False, compression="snappy")
-                tmp_parquet.replace(parquet_path)
-                stats[filename] = len(gdf_clean)
-            except Exception:
-                if tmp_parquet.exists():
-                    tmp_parquet.unlink()
-                raise
+        parquet_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_parquet = parquet_path.with_suffix(parquet_path.suffix + ".tmp")
+        try:
+            gdf_clean.to_parquet(tmp_parquet, index=False, compression="snappy")
+            tmp_parquet.replace(parquet_path)
+            stats[parquet_filename] = len(gdf_clean)
+        except Exception:
+            if tmp_parquet.exists():
+                tmp_parquet.unlink()
+            raise
 
-            geojson_path.parent.mkdir(parents=True, exist_ok=True)
-            tmp_geojson = Path(str(geojson_path) + ".tmp")
-            try:
-                gdf_clean.to_file(tmp_geojson, driver="GeoJSON")
-                tmp_geojson.replace(geojson_path)
-                geojson_stats[geojson_filename] = len(gdf_clean)
-            except Exception:
-                if tmp_geojson.exists():
-                    tmp_geojson.unlink()
-                raise
+        geojson_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_geojson = Path(str(geojson_path) + ".tmp")
+        try:
+            gdf_clean.to_file(tmp_geojson, driver="GeoJSON")
+            tmp_geojson.replace(geojson_path)
+            geojson_stats[geojson_filename] = len(gdf_clean)
+        except Exception:
+            if tmp_geojson.exists():
+                tmp_geojson.unlink()
+            raise
 
-            LOG.info("Wrote %-24s & GeoJSON (%8d features)", filename, len(gdf_clean))
+        LOG.info("Wrote %-24s & GeoJSON (%8d features)", base_name, len(gdf_clean))
     return stats, geojson_stats
 
 
