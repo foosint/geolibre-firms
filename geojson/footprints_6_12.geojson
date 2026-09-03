@@ -3,6 +3,13 @@
 "name": "footprints_6_12.geojson",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
 "features": [
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 71.23643, 65.84884 ], [ 71.25839, 65.84884 ], [ 71.25839, 65.83986 ], [ 71.23643, 65.83986 ], [ 71.23643, 65.84884 ] ] ] } },
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 71.62181, 59.41323 ], [ 71.63947, 59.41323 ], [ 71.63947, 59.40425 ], [ 71.62181, 59.40425 ], [ 71.62181, 59.41323 ] ] ] } },
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 75.52035, 64.90657 ], [ 75.54153, 64.90657 ], [ 75.54153, 64.89759 ], [ 75.52035, 64.89759 ], [ 75.52035, 64.90657 ] ] ] } },
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 71.25804, 65.85168 ], [ 71.28, 65.85168 ], [ 71.28, 65.8427 ], [ 71.25804, 65.8427 ], [ 71.25804, 65.85168 ] ] ] } },
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 70.98283, 66.19593 ], [ 71.00509, 66.19593 ], [ 71.00509, 66.18695 ], [ 70.98283, 66.18695 ], [ 70.98283, 66.19593 ] ] ] } },
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 70.97586, 66.20455 ], [ 70.99812, 66.20455 ], [ 70.99812, 66.19557 ], [ 70.97586, 66.19557 ], [ 70.97586, 66.20455 ] ] ] } },
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 78.68822, 57.42382 ], [ 78.7049, 57.42382 ], [ 78.7049, 57.41484 ], [ 78.68822, 57.41484 ], [ 78.68822, 57.42382 ] ] ] } },
 { "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 112.44409, 64.3433 ], [ 112.46483, 64.3433 ], [ 112.46483, 64.33432 ], [ 112.44409, 64.33432 ], [ 112.44409, 64.3433 ] ] ] } },
 { "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 106.55144, 58.09574 ], [ 106.56844, 58.09574 ], [ 106.56844, 58.08676 ], [ 106.55144, 58.08676 ], [ 106.55144, 58.09574 ] ] ] } },
 { "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 109.10473, 60.14374 ], [ 109.12277, 60.14374 ], [ 109.12277, 60.13476 ], [ 109.10473, 60.13476 ], [ 109.10473, 60.14374 ] ] ] } },
