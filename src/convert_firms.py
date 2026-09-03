@@ -279,68 +279,115 @@ def make_gdf(rows: list[dict[str, Any]]) -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(rows, geometry="geometry", crs="EPSG:4326")
 
 
-def write_outputs(all_rows: list[dict[str, Any]], output_dir: Path) -> dict[str, int]:
+def write_outputs(all_rows: list[dict[str, Any]], output_dir: Path, geojson_dir: Path) -> tuple[dict[str, int], dict[str, int]]:
     output_dir.mkdir(parents=True, exist_ok=True)
+    geojson_dir.mkdir(parents=True, exist_ok=True)
     stats: dict[str, int] = {}
+    geojson_stats: dict[str, int] = {}
 
     for (geometry_type, bucket), filename in OUTPUTS.items():
-        path = output_dir / filename
-        rows = [
-            row for row in all_rows
-            if row["geometry_type"] == geometry_type and row["time_range"] == bucket
-        ]
-        gdf = make_gdf(rows)
-        
-        if len(gdf) == 0:
-            LOG.info("Skipping %s (0 features found)", filename)
-            if path.exists():
-                path.unlink() # Remove old stale file if it exists
-            continue
+            parquet_path = output_dir / filename
+            geojson_filename = str(Path(filename).with_suffix(".geojson"))
+            geojson_path = geojson_dir / geojson_filename
             
-        path.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Write to a temporary file first to guarantee magic bytes are fully written before exposure
-        tmp_path = path.with_suffix(path.suffix + ".tmp")
-        try:
-            gdf.to_parquet(tmp_path, index=False, compression="snappy")
-            tmp_path.replace(path)  # Atomic rename
-            stats[filename] = len(gdf)
-            LOG.info("Wrote %-24s %8d features", filename, len(gdf))
-        except Exception:
-            if tmp_path.exists():
-                tmp_path.unlink()
-            raise
-    return stats
-
-# def write_outputs(all_rows: list[dict[str, Any]], output_dir: Path) -> dict[str, int]:
-#     output_dir.mkdir(parents=True, exist_ok=True)
-#     stats: dict[str, int] = {}
-
-#     for (geometry_type, bucket), filename in OUTPUTS.items():
-#         path = output_dir / filename
-#         rows = [
-#             row for row in all_rows
-#             if row["geometry_type"] == geometry_type and row["time_range"] == bucket
-#         ]
-#         gdf = make_gdf(rows)
-        
-#         if len(gdf) == 0:
-#             LOG.info("Skipping %s (0 features found)", filename)
-#             if path.exists():
-#                 path.unlink() # Remove old stale file if it exists
-#             continue
+            rows = [
+                row for row in all_rows
+                if row["geometry_type"] == geometry_type and row["time_range"] == bucket
+            ]
+            gdf = make_gdf(rows)
             
-#         path.parent.mkdir(parents=True, exist_ok=True)
-#         gdf.to_parquet(path, index=False, compression="snappy")
-#         stats[filename] = len(gdf)
-#         LOG.info("Wrote %-24s %8d features", filename, len(gdf))
-#     return stats
+            if len(gdf) == 0:
+                LOG.info("Skipping %s (0 features found)", filename)
+                if parquet_path.exists():
+                    parquet_path.unlink()
+                if geojson_path.exists():
+                    geojson_path.unlink()
+                continue
+                
+            columns_to_keep = ["sensor", "geometry"]
+            existing_cols = [col for col in columns_to_keep if col in gdf.columns]
+            gdf_clean = gdf[existing_cols]
+
+            parquet_path.parent.mkdir(parents=True, exist_ok=True)
+            tmp_parquet = parquet_path.with_suffix(parquet_path.suffix + ".tmp")
+            try:
+                gdf_clean.to_parquet(tmp_parquet, index=False, compression="snappy")
+                tmp_parquet.replace(parquet_path)
+                stats[filename] = len(gdf_clean)
+            except Exception:
+                if tmp_parquet.exists():
+                    tmp_parquet.unlink()
+                raise
+
+            geojson_path.parent.mkdir(parents=True, exist_ok=True)
+            tmp_geojson = Path(str(geojson_path) + ".tmp")
+            try:
+                gdf_clean.to_file(tmp_geojson, driver="GeoJSON")
+                tmp_geojson.replace(geojson_path)
+                geojson_stats[geojson_filename] = len(gdf_clean)
+            except Exception:
+                if tmp_geojson.exists():
+                    tmp_geojson.unlink()
+                raise
+
+            LOG.info("Wrote %-24s & GeoJSON (%8d features)", filename, len(gdf_clean))
+    return stats, geojson_stats
+
+
+
+def generate_index_html(output_dir: Path, geojson_dir: Path, metadata: dict, geojson_metadata: dict) -> None:
+    html_content = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>FIRMS Fire Data Portal</title>
+    <style>
+        body {{ font-family: sans-serif; margin: 40px; background: #f4f4f9; color: #333; }}
+        h1, h2 {{ color: #111; }}
+        .card {{ background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
+        pre {{ background: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; }}
+        ul {{ line-height: 1.6; }}
+    </style>
+</head>
+<body>
+    <h1>FIRMS Fire Data Portal</h1>
+    <p>Generated at: <strong>{metadata['generated_at']}</strong></p>
+    <p>Region: <strong>{metadata['region']}</strong> | Source: <strong>{metadata['source']}</strong></p>
+
+    <div class="card">
+        <h2>GeoParquet Files</h2>
+        <ul>
+"""
+    for fname in metadata["outputs"].keys():
+        html_content += f'            <li><a href="{output_dir.name}/{fname}">{fname}</a> ({metadata["outputs"][fname]} features)</li>\n'
+    
+    html_content += f"""        </ul>
+        <h3>Parquet Metadata</h3>
+        <pre>{json.dumps(metadata, indent=2)}</pre>
+    </div>
+
+    <div class="card">
+        <h2>GeoJSON Files</h2>
+        <ul>
+"""
+    for fname in geojson_metadata["outputs"].keys():
+        html_content += f'            <li><a href="{geojson_dir.name}/{fname}">{fname}</a> ({geojson_metadata["outputs"][fname]} features)</li>\n'
+
+    html_content += f"""        </ul>
+        <h3>GeoJSON Metadata</h3>
+        <pre>{json.dumps(geojson_metadata, indent=2)}</pre>
+    </div>
+</body>
+</html>
+"""
+    (output_dir.parent / "index.html").write_text(html_content, encoding="utf-8")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--filter", type=Path, required=True)
     parser.add_argument("--output", type=Path, default=Path("parquet"))
+    parser.add_argument("--geojson-output", type=Path, default=Path("geojson"))
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -359,7 +406,8 @@ def main() -> int:
     before = len(all_rows)
     all_rows = filter_rows(all_rows, load_filter(args.filter))
     LOG.info("Spatial filter: %d -> %d geometries", before, len(all_rows))
-    stats = write_outputs(all_rows, args.output)
+    
+    stats, geojson_stats = write_outputs(all_rows, args.output, args.geojson_output)
 
     metadata = {
         "generated_at": generated_at,
@@ -373,6 +421,21 @@ def main() -> int:
         "outputs": stats,
     }
     (args.output / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+
+    geojson_metadata = {
+        "generated_at": generated_at,
+        "source": "NASA FIRMS",
+        "region": "russia_asia",
+        "date_span": "24h",
+        "sensors": list(URLS),
+        "filter": str(args.filter),
+        "filter_centroids": "within",
+        "filter_footprints": "intersects",
+        "outputs": geojson_stats,
+    }
+    (args.geojson_output / "metadata.json").write_text(json.dumps(geojson_metadata, indent=2) + "\n", encoding="utf-8")
+
+    generate_index_html(args.output, args.geojson_output, metadata, geojson_metadata)
     return 0
 
 

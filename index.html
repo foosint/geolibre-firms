@@ -1,34 +1,91 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FIRMS Russia/Asia GeoParquet</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
-    code { background: #eee; padding: 2px 4px; }
-    li { margin: 10px 0; }
-  </style>
+    <meta charset="utf-8">
+    <title>FIRMS Fire Data Portal</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; background: #f4f4f9; color: #333; }
+        h1, h2 { color: #111; }
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        pre { background: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        ul { line-height: 1.6; }
+    </style>
 </head>
 <body>
-  <h1>NASA FIRMS Russia/Asia GeoParquet</h1>
-  <p>Automatically regenerated from NASA FIRMS approximately every 20 minutes.</p>
-  <h2>Data</h2>
-  <ul>
-    <li><a href="parquet/centroids_0_6.parquet">Centroids 0–&lt;6 h</a></li>
-    <li><a href="parquet/centroids_6_12.parquet">Centroids 6–&lt;12 h</a></li>
-    <li><a href="parquet/centroids_12_24.parquet">Centroids 12–&lt;24 h</a></li>
-    <li><a href="parquet/footprints_0_6.parquet">Footprints 0–&lt;6 h</a></li>
-    <li><a href="parquet/footprints_6_12.parquet">Footprints 6–&lt;12 h</a></li>
-    <li><a href="parquet/footprints_12_24.parquet">Footprints 12–&lt;24 h</a></li>
-  </ul>
-  <h2>Last update</h2>
-  <pre id="metadata">Loading...</pre>
-  <script>
-    fetch("parquet/metadata.json", {cache: "no-store"})
-      .then(r => r.json())
-      .then(data => document.getElementById("metadata").textContent = JSON.stringify(data, null, 2))
-      .catch(err => document.getElementById("metadata").textContent = err.toString());
-  </script>
+    <h1>FIRMS Fire Data Portal</h1>
+    <p>Generated at: <strong>2026-09-03T10:40:04.409256+00:00</strong></p>
+    <p>Region: <strong>russia_asia</strong> | Source: <strong>NASA FIRMS</strong></p>
+
+    <div class="card">
+        <h2>GeoParquet Files</h2>
+        <ul>
+            <li><a href="parquet/centroids_0_6.parquet">centroids_0_6.parquet</a> (4404 features)</li>
+            <li><a href="parquet/centroids_6_12.parquet">centroids_6_12.parquet</a> (7539 features)</li>
+            <li><a href="parquet/centroids_12_24.parquet">centroids_12_24.parquet</a> (33829 features)</li>
+            <li><a href="parquet/footprints_0_6.parquet">footprints_0_6.parquet</a> (4404 features)</li>
+            <li><a href="parquet/footprints_6_12.parquet">footprints_6_12.parquet</a> (7541 features)</li>
+            <li><a href="parquet/footprints_12_24.parquet">footprints_12_24.parquet</a> (33829 features)</li>
+        </ul>
+        <h3>Parquet Metadata</h3>
+        <pre>{
+  "generated_at": "2026-09-03T10:40:04.409256+00:00",
+  "source": "NASA FIRMS",
+  "region": "russia_asia",
+  "date_span": "24h",
+  "sensors": [
+    "MODIS_C6.1",
+    "SUOMI-NPP",
+    "NOAA-20",
+    "NOAA-21"
+  ],
+  "filter": "data\\filter\\ukraine_russia.shp",
+  "filter_centroids": "within",
+  "filter_footprints": "intersects",
+  "outputs": {
+    "centroids_0_6.parquet": 4404,
+    "centroids_6_12.parquet": 7539,
+    "centroids_12_24.parquet": 33829,
+    "footprints_0_6.parquet": 4404,
+    "footprints_6_12.parquet": 7541,
+    "footprints_12_24.parquet": 33829
+  }
+}</pre>
+    </div>
+
+    <div class="card">
+        <h2>GeoJSON Files</h2>
+        <ul>
+            <li><a href="geojson/centroids_0_6.geojson">centroids_0_6.geojson</a> (4404 features)</li>
+            <li><a href="geojson/centroids_6_12.geojson">centroids_6_12.geojson</a> (7539 features)</li>
+            <li><a href="geojson/centroids_12_24.geojson">centroids_12_24.geojson</a> (33829 features)</li>
+            <li><a href="geojson/footprints_0_6.geojson">footprints_0_6.geojson</a> (4404 features)</li>
+            <li><a href="geojson/footprints_6_12.geojson">footprints_6_12.geojson</a> (7541 features)</li>
+            <li><a href="geojson/footprints_12_24.geojson">footprints_12_24.geojson</a> (33829 features)</li>
+        </ul>
+        <h3>GeoJSON Metadata</h3>
+        <pre>{
+  "generated_at": "2026-09-03T10:40:04.409256+00:00",
+  "source": "NASA FIRMS",
+  "region": "russia_asia",
+  "date_span": "24h",
+  "sensors": [
+    "MODIS_C6.1",
+    "SUOMI-NPP",
+    "NOAA-20",
+    "NOAA-21"
+  ],
+  "filter": "data\\filter\\ukraine_russia.shp",
+  "filter_centroids": "within",
+  "filter_footprints": "intersects",
+  "outputs": {
+    "centroids_0_6.geojson": 4404,
+    "centroids_6_12.geojson": 7539,
+    "centroids_12_24.geojson": 33829,
+    "footprints_0_6.geojson": 4404,
+    "footprints_6_12.geojson": 7541,
+    "footprints_12_24.geojson": 33829
+  }
+}</pre>
+    </div>
 </body>
 </html>
