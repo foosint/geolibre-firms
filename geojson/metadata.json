@@ -13,11 +13,11 @@
   "filter_centroids": "within",
   "filter_footprints": "intersects",
   "outputs": {
-    "centroids_0_6.parquet": 3492,
-    "centroids_6_12.parquet": 8132,
-    "centroids_12_24.parquet": 32697,
-    "footprints_0_6.parquet": 3492,
-    "footprints_6_12.parquet": 8134,
-    "footprints_12_24.parquet": 32697
+    "centroids_0_6.geojson": 3492,
+    "centroids_6_12.geojson": 8132,
+    "centroids_12_24.geojson": 32697,
+    "footprints_0_6.geojson": 3492,
+    "footprints_6_12.geojson": 8134,
+    "footprints_12_24.geojson": 32697
   }
 }
