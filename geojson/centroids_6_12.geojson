@@ -3,6 +3,11 @@
 "name": "centroids_6_12.geojson",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
 "features": [
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Point", "coordinates": [ 77.31895, 66.10898 ] } },
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Point", "coordinates": [ 76.80758, 66.2447 ] } },
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Point", "coordinates": [ 76.80054, 66.25109 ] } },
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Point", "coordinates": [ 77.09489, 66.47091 ] } },
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Point", "coordinates": [ 72.30698, 54.79268 ] } },
 { "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Point", "coordinates": [ 58.30276, 51.41543 ] } },
 { "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Point", "coordinates": [ 58.33699, 51.37656 ] } },
 { "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Point", "coordinates": [ 58.37169, 51.40285 ] } },
