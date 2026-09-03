@@ -2762,10 +2762,6 @@
 { "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 45.56406, 43.25257 ] } },
 { "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 45.26655, 43.1429 ] } },
 { "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 45.49842, 44.22431 ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 48.18071, 42.05232 ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 71.8448, 71.42715 ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 70.99028, 66.20195 ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 70.99136, 66.19727 ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 37.79124, 59.13042 ] } }
+{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Point", "coordinates": [ 48.18071, 42.05232 ] } }
 ]
 }

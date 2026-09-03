@@ -416,8 +416,6 @@
 { "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Point", "coordinates": [ 45.82533, 49.05043 ] } },
 { "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Point", "coordinates": [ 45.87352, 49.04692 ] } },
 { "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Point", "coordinates": [ 45.83401, 49.03659 ] } },
-{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Point", "coordinates": [ 71.67482, 54.50425 ] } },
-{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1" }, "geometry": { "type": "Point", "coordinates": [ 71.59753, 54.64385 ] } },
 { "type": "Feature", "properties": { "sensor": "SUOMI-NPP" }, "geometry": { "type": "Point", "coordinates": [ 118.69116, 66.4432 ] } },
 { "type": "Feature", "properties": { "sensor": "SUOMI-NPP" }, "geometry": { "type": "Point", "coordinates": [ 118.68545, 66.44056 ] } },
 { "type": "Feature", "properties": { "sensor": "SUOMI-NPP" }, "geometry": { "type": "Point", "coordinates": [ 118.67979, 66.43794 ] } },

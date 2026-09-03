@@ -2763,10 +2763,6 @@
 { "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 45.56175, 43.25425 ], [ 45.56637, 43.25425 ], [ 45.56637, 43.25089 ], [ 45.56175, 43.25089 ], [ 45.56175, 43.25425 ] ] ] } },
 { "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 45.26424, 43.14458 ], [ 45.26886, 43.14458 ], [ 45.26886, 43.14122 ], [ 45.26424, 43.14122 ], [ 45.26424, 43.14458 ] ] ] } },
 { "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 45.49607, 44.22599 ], [ 45.50077, 44.22599 ], [ 45.50077, 44.22263 ], [ 45.49607, 44.22263 ], [ 45.49607, 44.22599 ] ] ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 48.17844, 42.054 ], [ 48.18298, 42.054 ], [ 48.18298, 42.05064 ], [ 48.17844, 42.05064 ], [ 48.17844, 42.054 ] ] ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 71.83951, 71.42883 ], [ 71.85009, 71.42883 ], [ 71.85009, 71.42547 ], [ 71.83951, 71.42547 ], [ 71.83951, 71.42883 ] ] ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 70.98611, 66.20363 ], [ 70.99445, 66.20363 ], [ 70.99445, 66.20027 ], [ 70.98611, 66.20027 ], [ 70.98611, 66.20363 ] ] ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 70.98719, 66.19895 ], [ 70.99553, 66.19895 ], [ 70.99553, 66.19559 ], [ 70.98719, 66.19559 ], [ 70.98719, 66.19895 ] ] ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 37.78796, 59.1321 ], [ 37.79452, 59.1321 ], [ 37.79452, 59.12874 ], [ 37.78796, 59.12874 ], [ 37.78796, 59.1321 ] ] ] } }
+{ "type": "Feature", "properties": { "sensor": "NOAA-21" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 48.17844, 42.054 ], [ 48.18298, 42.054 ], [ 48.18298, 42.05064 ], [ 48.17844, 42.05064 ], [ 48.17844, 42.054 ] ] ] } }
 ]
 }
