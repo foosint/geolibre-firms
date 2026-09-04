@@ -178,7 +178,7 @@ def walk(parent: ET.Element, folders: list[str], sensor: str, rows: list[dict[st
             print(name)
             walk(child, folders + ([name] if name else []), sensor, rows)
         elif tag in {"Document", "kml:Document"}:
-                walk(child, folders, sensor, rows)
+            walk(child, folders, sensor, rows)
         elif tag == "Placemark":
             name = text(child.find("kml:name", NS))
             bucket = find_time(folders + [name])
@@ -286,20 +286,8 @@ def make_gdf(rows: list[dict[str, Any]]) -> gpd.GeoDataFrame:
 def write_outputs(
     all_rows: list[dict[str, Any]],
     updated_at: str,
+    sensor_stats: dict[str, dict[str, Any]],
 ) -> dict[str, dict[str, dict[str, Any]]]:
-    """
-    Write all Parquet/GeoJSON files and a small sidecar metadata file for each.
-
-    Sidecar metadata looks like:
-        {
-            "features": 1234,
-            "updated_at": "2026-09-04T10:00:00+00:00"
-        }
-
-    The returned dictionary is used only for generating index.html. The
-    per-file statistics are deliberately not included in the global
-    metadata.json files.
-    """
     PARQUET_OUT.mkdir(parents=True, exist_ok=True)
     GEOJSON_OUT.mkdir(parents=True, exist_ok=True)
 
@@ -327,9 +315,20 @@ def write_outputs(
         gdf = make_gdf(rows)
 
         feature_count = len(gdf)
+        
+        subset_sources = {}
+        for sensor_name in URLS.keys():
+            s_status = sensor_stats.get(sensor_name, {}).get("status", "unknown")
+            s_features = len([r for r in rows if r.get("sensor") == sensor_name])
+            subset_sources[sensor_name] = {
+                "status": s_status,
+                "features": s_features,
+            }
+
         mini_metadata = {
             "features": feature_count,
             "updated_at": updated_at,
+            "sources": subset_sources,
         }
 
         if len(gdf) == 0:
@@ -339,8 +338,6 @@ def write_outputs(
                 if output_path.exists():
                     output_path.unlink()
 
-            # Keep the sidecar metadata so a successful run with zero
-            # features is distinguishable from a stale/missing output.
             parquet_meta_path.write_text(
                 json.dumps(mini_metadata, indent=2) + "\n",
                 encoding="utf-8",
@@ -358,7 +355,6 @@ def write_outputs(
         existing_cols = [col for col in columns_to_keep if col in gdf.columns]
         gdf_clean = gdf[existing_cols]
 
-        # Write Parquet atomically.
         parquet_path.parent.mkdir(parents=True, exist_ok=True)
         tmp_parquet = parquet_path.with_suffix(parquet_path.suffix + ".tmp")
         try:
@@ -373,7 +369,6 @@ def write_outputs(
                 tmp_parquet.unlink()
             raise
 
-        # Write GeoJSON atomically.
         geojson_path.parent.mkdir(parents=True, exist_ok=True)
         tmp_geojson = Path(str(geojson_path) + ".tmp")
         try:
@@ -384,8 +379,6 @@ def write_outputs(
                 tmp_geojson.unlink()
             raise
 
-        # Only update the sidecar metadata after the corresponding output
-        # files were written successfully.
         parquet_meta_path.write_text(
             json.dumps(mini_metadata, indent=2) + "\n",
             encoding="utf-8",
@@ -406,27 +399,16 @@ def write_outputs(
 
     return file_metadata
 
-def format_utc_timestamp(iso_str: str) -> str:
-    if not iso_str:
-        return ""
-    try:
-        # Parse ISO string and convert to UTC
-        dt = datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
-        dt_utc = dt.astimezone(timezone.utc)
-        return dt_utc.strftime("%Y-%m-%d %H:%M:%S UTC")
-    except Exception:
-        return iso_str  # Fallback to original string if parsing fails
 
 def format_utc_timestamp(iso_str: str) -> str:
     if not iso_str:
         return ""
     try:
-        # Parse ISO string and convert to UTC
         dt = datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
         dt_utc = dt.astimezone(timezone.utc)
         return dt_utc.strftime("%Y-%m-%d %H:%M:%S UTC")
     except Exception:
-        return iso_str  # Fallback to original string if parsing fails
+        return iso_str
 
 
 def generate_index_html(
@@ -503,21 +485,30 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     generated_at = datetime.now(timezone.utc).isoformat()
     all_rows: list[dict[str, Any]] = []
+    
+    sensor_stats: dict[str, dict[str, Any]] = {}
 
     for sensor, url in URLS.items():
         data = download_kmz(url)
         if data is None:
-            LOG.warning("Stopping further processing gracefully due to persistent download failure.")
-            return 0
-        rows = parse_kmz(data, sensor)
-        LOG.info("%s: extracted %d usable geometries", sensor, len(rows))
-        all_rows.extend(rows)
+            LOG.warning("Download failed for sensor %s. Marking as failed.", sensor)
+            sensor_stats[sensor] = {"status": "failed", "features": 0}
+            continue
+            
+        try:
+            rows = parse_kmz(data, sensor)
+            sensor_stats[sensor] = {"status": "ok", "features": len(rows)}
+            LOG.info("%s: extracted %d usable geometries", sensor, len(rows))
+            all_rows.extend(rows)
+        except Exception as e:
+            LOG.error("Failed parsing KMZ for %s: %s", sensor, e)
+            sensor_stats[sensor] = {"status": "failed", "features": 0}
 
     before = len(all_rows)
     all_rows = filter_rows(all_rows, load_filter(args.filter))
     LOG.info("Spatial filter: %d -> %d geometries", before, len(all_rows))
     
-    file_metadata = write_outputs(all_rows, generated_at)
+    file_metadata = write_outputs(all_rows, generated_at, sensor_stats)
 
     parquet_metadata = {
         "generated_at": generated_at,
@@ -528,6 +519,7 @@ def main() -> int:
         "filter": str(args.filter),
         "filter_centroids": "within",
         "filter_footprints": "intersects",
+        "sources": sensor_stats,
     }
     (PARQUET_OUT / "metadata.json").write_text(
         json.dumps(parquet_metadata, indent=2) + "\n",
@@ -543,6 +535,7 @@ def main() -> int:
         "filter": str(args.filter),
         "filter_centroids": "within",
         "filter_footprints": "intersects",
+        "sources": sensor_stats,
     }
     (GEOJSON_OUT / "metadata.json").write_text(
         json.dumps(geojson_metadata, indent=2) + "\n",
