@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T10:30:32.235037+00:00",
+  "generated_at": "2026-09-04T10:40:25.304838+00:00",
   "source": "NASA FIRMS",
   "region": "russia_asia",
   "date_span": "24h",
@@ -11,5 +11,23 @@
   ],
   "filter": "data/filter/ukraine_russia.shp",
   "filter_centroids": "within",
-  "filter_footprints": "intersects"
+  "filter_footprints": "intersects",
+  "sources": {
+    "MODIS_C6.1": {
+      "status": "ok",
+      "features": 1578
+    },
+    "SUOMI-NPP": {
+      "status": "ok",
+      "features": 15186
+    },
+    "NOAA-20": {
+      "status": "ok",
+      "features": 15038
+    },
+    "NOAA-21": {
+      "status": "ok",
+      "features": 14562
+    }
+  }
 }
