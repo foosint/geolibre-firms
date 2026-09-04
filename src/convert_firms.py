@@ -406,12 +406,36 @@ def write_outputs(
 
     return file_metadata
 
+def format_utc_timestamp(iso_str: str) -> str:
+    if not iso_str:
+        return ""
+    try:
+        # Parse ISO string and convert to UTC
+        dt = datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
+        dt_utc = dt.astimezone(timezone.utc)
+        return dt_utc.strftime("%Y-%m-%d %H:%M:%S UTC")
+    except Exception:
+        return iso_str  # Fallback to original string if parsing fails
+
+def format_utc_timestamp(iso_str: str) -> str:
+    if not iso_str:
+        return ""
+    try:
+        # Parse ISO string and convert to UTC
+        dt = datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
+        dt_utc = dt.astimezone(timezone.utc)
+        return dt_utc.strftime("%Y-%m-%d %H:%M:%S UTC")
+    except Exception:
+        return iso_str  # Fallback to original string if parsing fails
+
 
 def generate_index_html(
     parquet_metadata: dict,
     geojson_metadata: dict,
     file_metadata: dict[str, dict[str, dict[str, Any]]],
 ) -> None:
+    formatted_generated_at = format_utc_timestamp(parquet_metadata.get('generated_at', ''))
+
     html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -428,7 +452,7 @@ def generate_index_html(
 </head>
 <body>
     <h1>FIRMS Fire Data Portal</h1>
-    <p>Generated at: <strong>{parquet_metadata['generated_at']}</strong></p>
+    <p>Generated at: <strong>{formatted_generated_at}</strong></p>
     <p>Region: <strong>{parquet_metadata['region']}</strong> | Source: <strong>{parquet_metadata['source']}</strong></p>
 
     <div class="card">
@@ -437,9 +461,10 @@ def generate_index_html(
 """
 
     for fname, meta in file_metadata["parquet"].items():
+        file_updated = format_utc_timestamp(meta.get("updated_at", ""))
         html_content += (
             f'            <li><a href="{PARQUET_OUT.name}/{fname}">{fname}</a> '
-            f'({meta["features"]} features, updated {meta["updated_at"]})</li>\n'
+            f'({meta["features"]} features, updated {file_updated})</li>\n'
         )
 
     html_content += f"""        </ul>
@@ -453,9 +478,10 @@ def generate_index_html(
 """
 
     for fname, meta in file_metadata["geojson"].items():
+        file_updated = format_utc_timestamp(meta.get("updated_at", ""))
         html_content += (
             f'            <li><a href="{GEOJSON_OUT.name}/{fname}">{fname}</a> '
-            f'({meta["features"]} features, updated {meta["updated_at"]})</li>\n'
+            f'({meta["features"]} features, updated {file_updated})</li>\n'
         )
 
     html_content += f"""        </ul>
