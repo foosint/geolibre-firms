@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T10:10:25.715309+00:00",
+  "generated_at": "2026-09-04T10:20:30.419411+00:00",
   "source": "NASA FIRMS",
   "region": "russia_asia",
   "date_span": "24h",
@@ -11,13 +11,5 @@
   ],
   "filter": "data/filter/ukraine_russia.shp",
   "filter_centroids": "within",
-  "filter_footprints": "intersects",
-  "outputs": {
-    "centroids_0_6.geojson": 869,
-    "centroids_6_12.geojson": 2336,
-    "centroids_12_24.geojson": 9244,
-    "footprints_0_6.geojson": 871,
-    "footprints_6_12.geojson": 2339,
-    "footprints_12_24.geojson": 9249
-  }
+  "filter_footprints": "intersects"
 }
