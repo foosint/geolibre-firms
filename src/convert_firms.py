@@ -283,65 +283,135 @@ def make_gdf(rows: list[dict[str, Any]]) -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(rows, geometry="geometry", crs="EPSG:4326")
 
 
-def write_outputs(all_rows: list[dict[str, Any]]) -> tuple[dict[str, int], dict[str, int]]:
+def write_outputs(
+    all_rows: list[dict[str, Any]],
+    updated_at: str,
+) -> dict[str, dict[str, dict[str, Any]]]:
+    """
+    Write all Parquet/GeoJSON files and a small sidecar metadata file for each.
+
+    Sidecar metadata looks like:
+        {
+            "features": 1234,
+            "updated_at": "2026-09-04T10:00:00+00:00"
+        }
+
+    The returned dictionary is used only for generating index.html. The
+    per-file statistics are deliberately not included in the global
+    metadata.json files.
+    """
     PARQUET_OUT.mkdir(parents=True, exist_ok=True)
     GEOJSON_OUT.mkdir(parents=True, exist_ok=True)
-    stats: dict[str, int] = {}
-    geojson_stats: dict[str, int] = {}
+
+    file_metadata: dict[str, dict[str, dict[str, Any]]] = {
+        "parquet": {},
+        "geojson": {},
+    }
 
     for (geometry_type, bucket), base_name in OUTPUTS.items():
         parquet_filename = f"{base_name}.parquet"
         geojson_filename = f"{base_name}.geojson"
-        
+
         parquet_path = PARQUET_OUT / parquet_filename
         geojson_path = GEOJSON_OUT / geojson_filename
-        
+
+        parquet_meta_path = PARQUET_OUT / f"{base_name}.metadata.json"
+        geojson_meta_path = GEOJSON_OUT / f"{base_name}.metadata.json"
+
         rows = [
-            row for row in all_rows
-            if row["geometry_type"] == geometry_type and row["time_range"] == bucket
+            row
+            for row in all_rows
+            if row["geometry_type"] == geometry_type
+            and row["time_range"] == bucket
         ]
         gdf = make_gdf(rows)
-        
+
+        feature_count = len(gdf)
+        mini_metadata = {
+            "features": feature_count,
+            "updated_at": updated_at,
+        }
+
         if len(gdf) == 0:
-            LOG.info("Skipping %s (0 features found)", base_name)
-            if parquet_path.exists():
-                parquet_path.unlink()
-            if geojson_path.exists():
-                geojson_path.unlink()
+            LOG.info("No features for %s; removing old output if present.", base_name)
+
+            for output_path in (parquet_path, geojson_path):
+                if output_path.exists():
+                    output_path.unlink()
+
+            # Keep the sidecar metadata so a successful run with zero
+            # features is distinguishable from a stale/missing output.
+            parquet_meta_path.write_text(
+                json.dumps(mini_metadata, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            geojson_meta_path.write_text(
+                json.dumps(mini_metadata, indent=2) + "\n",
+                encoding="utf-8",
+            )
+
+            file_metadata["parquet"][parquet_filename] = mini_metadata
+            file_metadata["geojson"][geojson_filename] = mini_metadata
             continue
-            
-        columns_to_keep = ["sensor", "geometry"]
+
+        columns_to_keep = ["sensor", "geometry", "description"]
         existing_cols = [col for col in columns_to_keep if col in gdf.columns]
         gdf_clean = gdf[existing_cols]
 
+        # Write Parquet atomically.
         parquet_path.parent.mkdir(parents=True, exist_ok=True)
         tmp_parquet = parquet_path.with_suffix(parquet_path.suffix + ".tmp")
         try:
-            gdf_clean.to_parquet(tmp_parquet, index=False, compression="snappy")
+            gdf_clean.to_parquet(
+                tmp_parquet,
+                index=False,
+                compression="snappy",
+            )
             tmp_parquet.replace(parquet_path)
-            stats[parquet_filename] = len(gdf_clean)
         except Exception:
             if tmp_parquet.exists():
                 tmp_parquet.unlink()
             raise
 
+        # Write GeoJSON atomically.
         geojson_path.parent.mkdir(parents=True, exist_ok=True)
         tmp_geojson = Path(str(geojson_path) + ".tmp")
         try:
             gdf_clean.to_file(tmp_geojson, driver="GeoJSON")
             tmp_geojson.replace(geojson_path)
-            geojson_stats[geojson_filename] = len(gdf_clean)
         except Exception:
             if tmp_geojson.exists():
                 tmp_geojson.unlink()
             raise
 
-        LOG.info("Wrote %-24s & GeoJSON (%8d features)", base_name, len(gdf_clean))
-    return stats, geojson_stats
+        # Only update the sidecar metadata after the corresponding output
+        # files were written successfully.
+        parquet_meta_path.write_text(
+            json.dumps(mini_metadata, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        geojson_meta_path.write_text(
+            json.dumps(mini_metadata, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+        file_metadata["parquet"][parquet_filename] = mini_metadata
+        file_metadata["geojson"][geojson_filename] = mini_metadata
+
+        LOG.info(
+            "Wrote %-24s & GeoJSON (%8d features)",
+            base_name,
+            feature_count,
+        )
+
+    return file_metadata
 
 
-
-def generate_index_html(parquet_metadata: dict, geojson_metadata: dict) -> None:
+def generate_index_html(
+    parquet_metadata: dict,
+    geojson_metadata: dict,
+    file_metadata: dict[str, dict[str, dict[str, Any]]],
+) -> None:
     html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -353,6 +423,7 @@ def generate_index_html(parquet_metadata: dict, geojson_metadata: dict) -> None:
         .card {{ background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
         pre {{ background: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; }}
         ul {{ line-height: 1.6; }}
+        .updated {{ color: #666; font-size: 0.9em; }}
     </style>
 </head>
 <body>
@@ -364,9 +435,13 @@ def generate_index_html(parquet_metadata: dict, geojson_metadata: dict) -> None:
         <h2>GeoParquet Files</h2>
         <ul>
 """
-    for fname in parquet_metadata["outputs"].keys():
-        html_content += f'            <li><a href="{PARQUET_OUT.name}/{fname}">{fname}</a> ({parquet_metadata["outputs"][fname]} features)</li>\n'
-    
+
+    for fname, meta in file_metadata["parquet"].items():
+        html_content += (
+            f'            <li><a href="{PARQUET_OUT.name}/{fname}">{fname}</a> '
+            f'({meta["features"]} features, updated {meta["updated_at"]})</li>\n'
+        )
+
     html_content += f"""        </ul>
         <h3>Parquet Metadata</h3>
         <pre>{json.dumps(parquet_metadata, indent=2)}</pre>
@@ -376,8 +451,12 @@ def generate_index_html(parquet_metadata: dict, geojson_metadata: dict) -> None:
         <h2>GeoJSON Files</h2>
         <ul>
 """
-    for fname in geojson_metadata["outputs"].keys():
-        html_content += f'            <li><a href="{GEOJSON_OUT.name}/{fname}">{fname}</a> ({geojson_metadata["outputs"][fname]} features)</li>\n'
+
+    for fname, meta in file_metadata["geojson"].items():
+        html_content += (
+            f'            <li><a href="{GEOJSON_OUT.name}/{fname}">{fname}</a> '
+            f'({meta["features"]} features, updated {meta["updated_at"]})</li>\n'
+        )
 
     html_content += f"""        </ul>
         <h3>GeoJSON Metadata</h3>
@@ -386,6 +465,7 @@ def generate_index_html(parquet_metadata: dict, geojson_metadata: dict) -> None:
 </body>
 </html>
 """
+
     (ROOT_OUT / "index.html").write_text(html_content, encoding="utf-8")
 
 
@@ -411,7 +491,7 @@ def main() -> int:
     all_rows = filter_rows(all_rows, load_filter(args.filter))
     LOG.info("Spatial filter: %d -> %d geometries", before, len(all_rows))
     
-    parquet_stats, geojson_stats = write_outputs(all_rows)
+    file_metadata = write_outputs(all_rows, generated_at)
 
     parquet_metadata = {
         "generated_at": generated_at,
@@ -422,9 +502,11 @@ def main() -> int:
         "filter": str(args.filter),
         "filter_centroids": "within",
         "filter_footprints": "intersects",
-        "outputs": parquet_stats,
     }
-    (PARQUET_OUT / "metadata.json").write_text(json.dumps(parquet_metadata, indent=2) + "\n", encoding="utf-8")
+    (PARQUET_OUT / "metadata.json").write_text(
+        json.dumps(parquet_metadata, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
     geojson_metadata = {
         "generated_at": generated_at,
@@ -435,11 +517,13 @@ def main() -> int:
         "filter": str(args.filter),
         "filter_centroids": "within",
         "filter_footprints": "intersects",
-        "outputs": geojson_stats,
     }
-    (GEOJSON_OUT / "metadata.json").write_text(json.dumps(geojson_metadata, indent=2) + "\n", encoding="utf-8")
+    (GEOJSON_OUT / "metadata.json").write_text(
+        json.dumps(geojson_metadata, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
-    generate_index_html(parquet_metadata, geojson_metadata)
+    generate_index_html(parquet_metadata, geojson_metadata, file_metadata)
     return 0
 
 
