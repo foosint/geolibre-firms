@@ -1,22 +1,22 @@
 {
-  "features": 1890,
-  "updated_at": "2026-09-27T12:31:34.570495+00:00",
+  "features": 0,
+  "updated_at": "2026-09-27T12:41:19.538601+00:00",
   "sources": {
     "MODIS_C6.1": {
-      "status": "ok",
-      "features": 20
+      "status": "failed",
+      "features": 0
     },
     "SUOMI-NPP": {
-      "status": "ok",
-      "features": 658
+      "status": "failed",
+      "features": 0
     },
     "NOAA-20": {
-      "status": "ok",
-      "features": 602
+      "status": "failed",
+      "features": 0
     },
     "NOAA-21": {
-      "status": "ok",
-      "features": 610
+      "status": "failed",
+      "features": 0
     }
   }
 }
