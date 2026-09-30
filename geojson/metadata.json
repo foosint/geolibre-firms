@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T00:31:27.542503+00:00",
+  "generated_at": "2026-09-30T00:41:42.973979+00:00",
   "source": "NASA FIRMS",
   "region": "russia_asia",
   "date_span": "24h",
@@ -14,20 +14,20 @@
   "filter_footprints": "intersects",
   "sources": {
     "MODIS_C6.1": {
-      "status": "failed",
-      "features": 0
+      "status": "ok",
+      "features": 1956
     },
     "SUOMI-NPP": {
-      "status": "failed",
-      "features": 0
+      "status": "ok",
+      "features": 8896
     },
     "NOAA-20": {
-      "status": "failed",
-      "features": 0
+      "status": "ok",
+      "features": 10120
     },
     "NOAA-21": {
-      "status": "failed",
-      "features": 0
+      "status": "ok",
+      "features": 9598
     }
   }
 }
