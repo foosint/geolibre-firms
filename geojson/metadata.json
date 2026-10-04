@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T13:01:46.651088+00:00",
+  "generated_at": "2026-10-04T13:12:10.767715+00:00",
   "source": "NASA FIRMS",
   "region": "russia_asia",
   "date_span": "24h",
@@ -15,11 +15,11 @@
   "sources": {
     "MODIS_C6.1": {
       "status": "ok",
-      "features": 1320
+      "features": 1308
     },
     "SUOMI-NPP": {
       "status": "ok",
-      "features": 7722
+      "features": 8008
     },
     "NOAA-20": {
       "status": "ok",
