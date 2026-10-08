@@ -1,6 +1,6 @@
 {
-  "features": 1483,
-  "updated_at": "2026-10-08T15:02:08.311677+00:00",
+  "features": 1652,
+  "updated_at": "2026-10-08T15:23:28.950031+00:00",
   "sources": {
     "MODIS_C6.1": {
       "status": "ok",
@@ -8,11 +8,11 @@
     },
     "SUOMI-NPP": {
       "status": "ok",
-      "features": 373
+      "features": 481
     },
     "NOAA-20": {
       "status": "ok",
-      "features": 507
+      "features": 568
     },
     "NOAA-21": {
       "status": "ok",
