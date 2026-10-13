@@ -1,10 +1,10 @@
 {
-  "features": 559,
-  "updated_at": "2026-10-13T09:51:55.615115+00:00",
+  "features": 547,
+  "updated_at": "2026-10-13T10:02:08.779464+00:00",
   "sources": {
     "MODIS_C6.1": {
       "status": "ok",
-      "features": 203
+      "features": 191
     },
     "SUOMI-NPP": {
       "status": "ok",
