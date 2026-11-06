@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "footprints_6_12.geojson",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1", "description": "<b>Latitude: </b> 52.55452<br/> \n                    <b>Longitude: </b> 39.57318<br/> \n                    <b>Detection Time: </b> 2026-11-06 06:18 UTC<br/> \n                    <b>Sensor: </b> Terra MODIS<br/>\n                    <b>Confidence [0-100%]: </b> 40%<br/> \n                    <b>Day/Night: </b> Day<br/>\n                    <b>Scan: </b> 1.22 km<br/>\n                    <b>Track: </b> 1.1 km<br/>\n                    <b>FRP: </b> 20.11 MW<br/>\n                    <b>Brightness: </b> 312.14 K" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 39.56579, 52.55901 ], [ 39.58057, 52.55901 ], [ 39.58057, 52.55003 ], [ 39.56579, 52.55003 ], [ 39.56579, 52.55901 ] ] ] } }
+]
+}
