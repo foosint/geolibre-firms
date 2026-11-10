@@ -1,0 +1,9 @@
+{
+"type": "FeatureCollection",
+"name": "footprints_0_6.geojson",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1", "description": "<b>Latitude: </b> 55.38337<br/> \n                    <b>Longitude: </b> 68.68247<br/> \n                    <b>Detection Time: </b> 2026-11-10 10:15 UTC<br/> \n                    <b>Sensor: </b> Aqua MODIS<br/>\n                    <b>Confidence [0-100%]: </b> 43%<br/> \n                    <b>Day/Night: </b> Day<br/>\n                    <b>Scan: </b> 1.06 km<br/>\n                    <b>Track: </b> 1.03 km<br/>\n                    <b>FRP: </b> 12.01 MW<br/>\n                    <b>Brightness: </b> 303.93 K" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 68.67456, 55.38786 ], [ 68.69038, 55.38786 ], [ 68.69038, 55.37888 ], [ 68.67456, 55.37888 ], [ 68.67456, 55.38786 ] ] ] } },
+{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1", "description": "<b>Latitude: </b> 55.41008<br/> \n                    <b>Longitude: </b> 65.48463<br/> \n                    <b>Detection Time: </b> 2026-11-10 10:15 UTC<br/> \n                    <b>Sensor: </b> Aqua MODIS<br/>\n                    <b>Confidence [0-100%]: </b> 53%<br/> \n                    <b>Day/Night: </b> Day<br/>\n                    <b>Scan: </b> 1.29 km<br/>\n                    <b>Track: </b> 1.13 km<br/>\n                    <b>FRP: </b> 14.3 MW<br/>\n                    <b>Brightness: </b> 302.6 K" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 65.47672, 55.41457 ], [ 65.49254, 55.41457 ], [ 65.49254, 55.40559 ], [ 65.47672, 55.40559 ], [ 65.47672, 55.41457 ] ] ] } }
+]
+}
