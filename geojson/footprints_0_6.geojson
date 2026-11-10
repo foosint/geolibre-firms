@@ -1,9 +1,0 @@
-{
-"type": "FeatureCollection",
-"name": "footprints_0_6.geojson",
-"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-"features": [
-{ "type": "Feature", "properties": { "sensor": "NOAA-20", "description": "<b>Latitude: </b> 50.54337<br/> \n                    <b>Longitude: </b> 26.26005<br/> \n                    <b>Detection Time: </b> 2026-11-10 01:43 UTC<br/> \n                    <b>Sensor: </b> NOAA-20 VIIRS<br/>\n                    <b>Confidence: </b> Nominal<br/> \n                    <b>Day/Night: </b> Night<br/>\n                    <b>Scan: </b> 0.51 km<br/>\n                    <b>Track: </b> 0.66 km<br/>\n                    <b>FRP: </b> 1.99 MW<br/>\n                    <b>Brightness: </b> 298.49 K" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 26.2574, 50.54505 ], [ 26.2627, 50.54505 ], [ 26.2627, 50.54169 ], [ 26.2574, 50.54169 ], [ 26.2574, 50.54505 ] ] ] } },
-{ "type": "Feature", "properties": { "sensor": "NOAA-20", "description": "<b>Latitude: </b> 50.54472<br/> \n                    <b>Longitude: </b> 26.26053<br/> \n                    <b>Detection Time: </b> 2026-11-10 01:43 UTC<br/> \n                    <b>Sensor: </b> NOAA-20 VIIRS<br/>\n                    <b>Confidence: </b> Nominal<br/> \n                    <b>Day/Night: </b> Night<br/>\n                    <b>Scan: </b> 0.51 km<br/>\n                    <b>Track: </b> 0.66 km<br/>\n                    <b>FRP: </b> 1.32 MW<br/>\n                    <b>Brightness: </b> 296.18 K" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 26.25788, 50.5464 ], [ 26.26318, 50.5464 ], [ 26.26318, 50.54304 ], [ 26.25788, 50.54304 ], [ 26.25788, 50.5464 ] ] ] } }
-]
-}
