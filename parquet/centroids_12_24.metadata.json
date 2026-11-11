@@ -1,6 +1,6 @@
 {
-  "features": 285,
-  "updated_at": "2026-11-11T16:51:29.480654+00:00",
+  "features": 278,
+  "updated_at": "2026-11-11T17:02:12.905510+00:00",
   "sources": {
     "MODIS_C6.1": {
       "status": "ok",
@@ -12,7 +12,7 @@
     },
     "NOAA-20": {
       "status": "ok",
-      "features": 145
+      "features": 138
     },
     "NOAA-21": {
       "status": "ok",
