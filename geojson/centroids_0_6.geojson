@@ -1,8 +1,0 @@
-{
-"type": "FeatureCollection",
-"name": "centroids_0_6.geojson",
-"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-"features": [
-{ "type": "Feature", "properties": { "sensor": "MODIS_C6.1", "description": "<b>Latitude: </b> 55.2004<br/> \n                    <b>Longitude: </b> 84.27942<br/> \n                    <b>Detection Time: </b> 2026-11-18 13:48 UTC<br/> \n                    <b>Sensor: </b> Terra MODIS<br/>\n                    <b>Confidence [0-100%]: </b> 56%<br/> \n                    <b>Day/Night: </b> Night<br/>\n                    <b>Scan: </b> 1.23 km<br/>\n                    <b>Track: </b> 1.1 km<br/>\n                    <b>FRP: </b> 16.15 MW<br/>\n                    <b>Brightness: </b> 303.61 K" }, "geometry": { "type": "Point", "coordinates": [ 84.27942, 55.2004 ] } }
-]
-}
