@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T07:11:49.368492+00:00",
+  "generated_at": "2026-11-27T07:22:26.579351+00:00",
   "source": "NASA FIRMS",
   "region": "russia_asia",
   "date_span": "24h",
@@ -27,7 +27,7 @@
     },
     "NOAA-21": {
       "status": "ok",
-      "features": 11184
+      "features": 12338
     }
   }
 }
